@@ -3,26 +3,24 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:solana_wallet_adapter/solana_wallet_adapter.dart' show SolanaWalletAdapterException, 
-  SolanaWalletAdapterExceptionCode;
+import '../solana_wallet_adapter/solana_wallet_adapter.dart'
+    show SolanaWalletAdapterException, SolanaWalletAdapterExceptionCode;
 import '../../solana_wallet_provider.dart' show SolanaWalletProvider;
 import '../constants.dart';
 import '../models/dismiss_state.dart';
 import '../views/solana_wallet_modal_banner_view.dart';
 
-
 /// Solana Wallet Method Builder
 /// ------------------------------------------------------------------------------------------------
 
-/// A widget that builds its view based on the current state of [future]. The widget animates view 
+/// A widget that builds its view based on the current state of [future]. The widget animates view
 /// changes between states.
-/// 
+///
 /// Provide [builder] to define custom UIs for each state.
 class SolanaWalletMethodBuilder<T> extends StatefulWidget {
-
   /// Creates a widget to display the state of a method call.
   const SolanaWalletMethodBuilder({
-    super.key, 
+    super.key,
     required this.future,
     required this.completer,
     required this.dismissState,
@@ -41,29 +39,30 @@ class SolanaWalletMethodBuilder<T> extends StatefulWidget {
 
   /// {@template solana_wallet_provider.SolanaWalletMethodBuilder.dismissState}
   /// The completion state in which to automatically close the [SolanaWalletProvider] modal.
-  /// 
-  /// For example, providing a value of [DismissState.success] tells the widget to ignore drawing 
+  ///
+  /// For example, providing a value of [DismissState.success] tells the widget to ignore drawing
   /// the `success` state and call [SolanaWalletProvider.close] instead.
   /// {@endtemplate}
   final DismissState? dismissState;
 
   /// {@template solana_wallet_provider.SolanaWalletMethodBuilder.builder}
   /// Builds the widget for the current [AsyncSnapshot.connectionState].
-  /// 
+  ///
   /// To trigger state change animations you may need to set the returned widget's [Key] property.
   /// {@endtemplate}
-  final Widget? Function(BuildContext context, AsyncSnapshot<T> snapshot)? builder;
+  final Widget? Function(BuildContext context, AsyncSnapshot<T> snapshot)?
+      builder;
 
   @override
-  State<SolanaWalletMethodBuilder<T>> createState() => _SolanaWalletMethodBuilderState<T>();
+  State<SolanaWalletMethodBuilder<T>> createState() =>
+      _SolanaWalletMethodBuilderState<T>();
 }
-
 
 /// Solana Wallet Method Builder State
 /// ------------------------------------------------------------------------------------------------
 
-class _SolanaWalletMethodBuilderState<T> extends State<SolanaWalletMethodBuilder<T>> {
-
+class _SolanaWalletMethodBuilderState<T>
+    extends State<SolanaWalletMethodBuilder<T>> {
   /// The current state of [_future].
   late AsyncSnapshot<T> _snapshot;
 
@@ -87,12 +86,12 @@ class _SolanaWalletMethodBuilderState<T> extends State<SolanaWalletMethodBuilder
 
   /// Sets [_snapshot] based on the current value of [SolanaWalletMethodBuilder.future].
   void _initSnapshot() {
-    _snapshot = widget.future != null 
-      ? AsyncSnapshot<T>.waiting() 
-      : AsyncSnapshot<T>.nothing();
+    _snapshot = widget.future != null
+        ? AsyncSnapshot<T>.waiting()
+        : AsyncSnapshot<T>.nothing();
   }
 
-  /// Sets [_future] and subsequently triggers a call to [_handler]. The [_future] is set the first 
+  /// Sets [_future] and subsequently triggers a call to [_handler]. The [_future] is set the first
   /// time a non-null value is provided by [SolanaWalletMethodBuilder.future].
   void _initFuture() {
     final Future<T>? future = widget.future;
@@ -104,15 +103,16 @@ class _SolanaWalletMethodBuilderState<T> extends State<SolanaWalletMethodBuilder
 
   /// Returns true if [error] is a [SolanaWalletAdapterExceptionCode.cancelled] exception.
   bool _isCancelledException(final Object error) {
-    return error is SolanaWalletAdapterException
-      && error.code == SolanaWalletAdapterExceptionCode.cancelled;
+    return error is SolanaWalletAdapterException &&
+        error.code == SolanaWalletAdapterExceptionCode.cancelled;
   }
 
-  /// Returns true if [snapshot] is equivalent to the provided 
+  /// Returns true if [snapshot] is equivalent to the provided
   /// [SolanaWalletMethodBuilder.dismissState].
   bool _isDismissState(final AsyncSnapshot snapshot) {
     final DismissState? dismissState = widget.dismissState;
-    if (dismissState == null || snapshot.connectionState != ConnectionState.done) {
+    if (dismissState == null ||
+        snapshot.connectionState != ConnectionState.done) {
       return false;
     }
     switch (dismissState) {
@@ -125,7 +125,7 @@ class _SolanaWalletMethodBuilderState<T> extends State<SolanaWalletMethodBuilder
     }
   }
 
-  /// Sets [_snapshot] to [snapshot] if the [AsyncSnapshot.connectionState] has changed and is not 
+  /// Sets [_snapshot] to [snapshot] if the [AsyncSnapshot.connectionState] has changed and is not
   /// an equivalent [DismissState].
   void _setSnapshot(final AsyncSnapshot<T> snapshot) {
     if (mounted && _snapshot.connectionState != snapshot.connectionState) {
@@ -135,7 +135,7 @@ class _SolanaWalletMethodBuilderState<T> extends State<SolanaWalletMethodBuilder
         SolanaWalletProvider.close(context);
       }
     }
-  } 
+  }
 
   /// Resolves [SolanaWalletMethodBuilder.completer] with [data].
   void _complete(final T data) {
@@ -161,10 +161,11 @@ class _SolanaWalletMethodBuilderState<T> extends State<SolanaWalletMethodBuilder
       _setSnapshot(AsyncSnapshot<T>.withData(ConnectionState.done, data));
       _complete(data);
     } catch (error, stackTrace) {
-      // Ignore `cancelled` exceptions, the modal should have already been poped by 
+      // Ignore `cancelled` exceptions, the modal should have already been poped by
       // [SolanaWalletProvider].
-      if (!_isCancelledException(error)) { 
-        _setSnapshot(AsyncSnapshot<T>.withError(ConnectionState.done, error, stackTrace));
+      if (!_isCancelledException(error)) {
+        _setSnapshot(AsyncSnapshot<T>.withError(
+            ConnectionState.done, error, stackTrace));
       }
       _completeError(error, stackTrace);
     }
@@ -172,7 +173,7 @@ class _SolanaWalletMethodBuilderState<T> extends State<SolanaWalletMethodBuilder
 
   /// Builds a view for the current [AsyncSnapshot.connectionState].
   Widget _builder(
-    final BuildContext context, 
+    final BuildContext context,
     final AsyncSnapshot<T> snapshot,
   ) {
     final Widget? child = widget.builder?.call(context, _snapshot);
@@ -204,11 +205,12 @@ class _SolanaWalletMethodBuilderState<T> extends State<SolanaWalletMethodBuilder
   @override
   Widget build(
     final BuildContext context,
-  ) => AnimatedSize(
-      duration: kTransitionDuration,
-      child: AnimatedSwitcher(
+  ) =>
+      AnimatedSize(
         duration: kTransitionDuration,
-        child: _builder(context, _snapshot),
-      ),
-    );
+        child: AnimatedSwitcher(
+          duration: kTransitionDuration,
+          child: _builder(context, _snapshot),
+        ),
+      );
 }

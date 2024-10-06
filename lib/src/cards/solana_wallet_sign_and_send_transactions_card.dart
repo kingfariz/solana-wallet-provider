@@ -2,7 +2,7 @@
 /// ------------------------------------------------------------------------------------------------
 
 import 'package:flutter/material.dart';
-import 'package:solana_wallet_adapter/solana_wallet_adapter.dart';
+import '../solana_wallet_adapter/solana_wallet_adapter.dart';
 import 'package:solana_web3/exceptions.dart';
 import 'package:solana_web3/solana_web3.dart';
 import '../themes/solana_wallet_theme_extension.dart';
@@ -10,13 +10,12 @@ import '../views/solana_wallet_modal_banner_view.dart';
 import '../widgets/sign_transactions_mixin.dart';
 import '../widgets/adapter_widget.dart';
 
-
 /// Solana Wallet Sign And Send Transactions Card
 /// ------------------------------------------------------------------------------------------------
 
 /// The [SolanaWalletSignAndSendTransactionsCard] widget's state.
-typedef SignAndSendAdapterState 
-  = AdapterState<SignAndSendTransactionsResult, SolanaWalletSignAndSendTransactionsCard>;
+typedef SignAndSendAdapterState = AdapterState<SignAndSendTransactionsResult,
+    SolanaWalletSignAndSendTransactionsCard>;
 
 /// The sign and send transaction method's progress states.
 enum _ProgressState {
@@ -25,10 +24,9 @@ enum _ProgressState {
 }
 
 /// A modal card for `signAndSendTransactions` method calls.
-class SolanaWalletSignAndSendTransactionsCard 
-  extends AdapterWidget<SignAndSendTransactionsResult> 
-  with SignTransactionsWidget 
-{
+class SolanaWalletSignAndSendTransactionsCard
+    extends AdapterWidget<SignAndSendTransactionsResult>
+    with SignTransactionsWidget {
   /// Creates a `signAndSendTransactions` card.
   const SolanaWalletSignAndSendTransactionsCard({
     super.key,
@@ -58,17 +56,15 @@ class SolanaWalletSignAndSendTransactionsCard
   final bool eagerError;
 
   @override
-  SignAndSendAdapterState createState() => _SolanaWalletSignAndSendTransactionsCardState();
+  SignAndSendAdapterState createState() =>
+      _SolanaWalletSignAndSendTransactionsCardState();
 }
-
 
 /// Solana Wallet Sign And Send Transactions Card State
 /// ------------------------------------------------------------------------------------------------
 
-class _SolanaWalletSignAndSendTransactionsCardState 
-  extends SignAndSendAdapterState 
-  with SignTransactionsState
-{
+class _SolanaWalletSignAndSendTransactionsCardState
+    extends SignAndSendAdapterState with SignTransactionsState {
   /// The `in progress` state of the sign and send method call.
   _ProgressState _progressState = _ProgressState.signing;
 
@@ -84,11 +80,11 @@ class _SolanaWalletSignAndSendTransactionsCardState
 
   /// Creates a Solana explorer uri for a transaction [signature].
   Uri _uri(final String signature) => Uri(
-    scheme: 'https',
-    host: 'explorer.solana.com',
-    path: 'tx/$signature',
-    queryParameters: { 'cluster': widget.connection.httpCluster.name },
-  );
+        scheme: 'https',
+        host: 'explorer.solana.com',
+        path: 'tx/$signature',
+        queryParameters: {'cluster': widget.connection.httpCluster.name},
+      );
 
   /// Opens a tab for each of the transaction [signatures].
   void _onTapViewTransactions(final List<String?> signatures) {
@@ -102,10 +98,9 @@ class _SolanaWalletSignAndSendTransactionsCardState
 
   @override
   Future<SignAndSendTransactionsResult> invokeMethod() async {
-
-    // Sign transactions with the wallet account. 
+    // Sign transactions with the wallet account.
     final SignTransactionsResult result = await signTransactions();
-    
+
     // Broadcast the signed transactions on the network.
     final Connection connection = widget.connection;
     final SignAndSendTransactionsConfig? config = widget.config;
@@ -126,32 +121,31 @@ class _SolanaWalletSignAndSendTransactionsCardState
       final List<Future<SignatureNotification>> futures = [];
       for (final String? b58Signature in b58Signatures) {
         futures.add(b58Signature != null
-          ? connection.confirmTransaction(
-              b58Signature,
-              config: CommitmentConfig(
-                commitment: commitment,
-              ),
-            )
-          : Future.error(const SignatureNotification(
-              err: TransactionException('Transaction confirmation failed.'),
-            )
-          )
-        );
+            ? connection.confirmTransaction(
+                b58Signature,
+                config: CommitmentConfig(
+                  commitment: commitment,
+                ),
+              )
+            : Future.error(const SignatureNotification(
+                err: TransactionException('Transaction confirmation failed.'),
+              )));
       }
       await Future.wait(futures, eagerError: eagerError);
     }
 
     // Return the result.
     return SignAndSendTransactionsResult(
-      signatures: b58Signatures.map(
-        (signature) => signature != null ? base58To64Encode(signature) : null
-      ).toList(growable: false),
+      signatures: b58Signatures
+          .map((signature) =>
+              signature != null ? base58To64Encode(signature) : null)
+          .toList(growable: false),
     );
   }
 
   @override
   Widget? builder(
-    final BuildContext context, 
+    final BuildContext context,
     final AsyncSnapshot<SignAndSendTransactionsResult> snapshot,
   ) {
     switch (snapshot.connectionState) {
@@ -170,7 +164,7 @@ class _SolanaWalletSignAndSendTransactionsCardState
         } else {
           return SolanaWalletModalBannerView.opening();
         }
-      case ConnectionState.done:        
+      case ConnectionState.done:
         final Object? error = snapshot.error;
         if (error != null) {
           return SolanaWalletModalBannerView.error(
@@ -185,8 +179,9 @@ class _SolanaWalletSignAndSendTransactionsCardState
             title: const Text('Transaction Complete'),
             message: Text('Your transaction$suffix $verb been processed.'),
             body: TextButton(
-              style: SolanaWalletThemeExtension.of(context)?.secondaryButtonStyle,
-              onPressed: () => _onTapViewTransactions(signatures), 
+              style:
+                  SolanaWalletThemeExtension.of(context)?.secondaryButtonStyle,
+              onPressed: () => _onTapViewTransactions(signatures),
               child: Text('View Transaction$suffix'),
             ),
           );

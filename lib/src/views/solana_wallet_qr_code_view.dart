@@ -4,7 +4,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:solana_wallet_adapter/solana_wallet_adapter.dart' show AppInfo;
+import '../solana_wallet_adapter/solana_wallet_adapter.dart' show AppInfo;
 import '../layouts/solana_wallet_grid.dart';
 import '../themes/solana_wallet_qr_code_theme.dart';
 import '../themes/solana_wallet_theme_extension.dart';
@@ -13,13 +13,11 @@ import '../widgets/solana_wallet_copy_text.dart';
 import '../widgets/solana_wallet_countdown.dart';
 import 'solana_wallet_column_view.dart';
 
-
 /// Solana Wallet QR Code View
 /// ------------------------------------------------------------------------------------------------
 
 /// A view that presents a QR code to connect a dApp to a wallet application via [hostAuthority].
 class SolanaWalletQrCodeView extends StatefulWidget {
-  
   /// Creates a view that presents a QR code to connect to a wallet application via [hostAuthority].
   const SolanaWalletQrCodeView({
     super.key,
@@ -49,12 +47,10 @@ class SolanaWalletQrCodeView extends StatefulWidget {
   State<SolanaWalletQrCodeView> createState() => _SolanaWalletQrCodeViewState();
 }
 
-
 /// Solana Wallet QR Code View State
 /// ------------------------------------------------------------------------------------------------
 
 class _SolanaWalletQrCodeViewState extends State<SolanaWalletQrCodeView> {
-  
   /// The download link text's tap gesture recognizer.
   final TapGestureRecognizer _tapGestureRecognizer = TapGestureRecognizer();
 
@@ -72,24 +68,28 @@ class _SolanaWalletQrCodeViewState extends State<SolanaWalletQrCodeView> {
 
   @override
   Widget build(final BuildContext context) {
-    final SolanaWalletQrCodeTheme? qrTheme = SolanaWalletThemeExtension.of(context)?.qrCodeTheme;
+    final SolanaWalletQrCodeTheme? qrTheme =
+        SolanaWalletThemeExtension.of(context)?.qrCodeTheme;
     final Color accentColor = Theme.of(context).colorScheme.primary;
     final TextStyle textStyle = DefaultTextStyle.of(context).style;
     final String? name = widget.app?.name;
     final Color foregroundColor = qrTheme?.foregroundColor ?? Colors.black;
-    final EdgeInsets padding = qrTheme?.padding ?? const EdgeInsets.all(SolanaWalletGrid.x1);
-    final BorderRadius borderRadius = qrTheme?.borderRadius ?? BorderRadius.circular(
-      padding.collapsedSize.shortestSide,
-    );
+    final EdgeInsets padding =
+        qrTheme?.padding ?? const EdgeInsets.all(SolanaWalletGrid.x1);
+    final BorderRadius borderRadius = qrTheme?.borderRadius ??
+        BorderRadius.circular(
+          padding.collapsedSize.shortestSide,
+        );
     return SolanaWalletModalView(
       title: Text('Connect ${name ?? "Wallet"}'),
       message: RichText(
         textAlign: TextAlign.center,
         text: TextSpan(
-          text: "Open your mobile wallet and scan the QR code. Don't have a wallet? ",
+          text:
+              "Open your mobile wallet and scan the QR code. Don't have a wallet? ",
           children: [
             TextSpan(
-              text: 'Download ${name ?? "App"}', 
+              text: 'Download ${name ?? "App"}',
               recognizer: _tapGestureRecognizer,
               style: TextStyle(fontWeight: FontWeight.w500, color: accentColor),
             ),
@@ -106,13 +106,14 @@ class _SolanaWalletQrCodeViewState extends State<SolanaWalletQrCodeView> {
             child: DecoratedBox(
               position: DecorationPosition.foreground,
               decoration: BoxDecoration(
-                border: qrTheme?.border ?? Border.all(
-                  color: foregroundColor,
-                ),
+                border: qrTheme?.border ??
+                    Border.all(
+                      color: foregroundColor,
+                    ),
                 borderRadius: borderRadius,
               ),
               child: SolanaWalletCopyText(
-                text: widget.hostAuthority, 
+                text: widget.hostAuthority,
                 child: QrImageView(
                   data: widget.hostAuthority,
                   embeddedImage: widget.app?.icon,
@@ -121,7 +122,8 @@ class _SolanaWalletQrCodeViewState extends State<SolanaWalletQrCodeView> {
                     color: foregroundColor,
                   ),
                   backgroundColor: qrTheme?.backgroundColor ?? Colors.white,
-                  padding: qrTheme?.padding ?? const EdgeInsets.all(SolanaWalletGrid.x2),
+                  padding: qrTheme?.padding ??
+                      const EdgeInsets.all(SolanaWalletGrid.x2),
                   size: qrTheme?.size ?? SolanaWalletGrid.x1 * 24,
                 ),
               ),

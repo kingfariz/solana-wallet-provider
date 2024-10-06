@@ -3,7 +3,7 @@
 
 import 'dart:async' show Completer;
 import 'package:flutter/material.dart';
-import 'package:solana_wallet_adapter/solana_wallet_adapter.dart';
+import '../solana_wallet_adapter/solana_wallet_adapter.dart';
 import '../../solana_wallet_provider.dart' show SolanaWalletThemeExtension;
 import '../models/dismiss_state.dart';
 import '../themes/solana_wallet_modal_banner_theme.dart';
@@ -13,13 +13,11 @@ import '../widgets/solana_wallet_app_icon.dart';
 import '../widgets/solana_wallet_method_builder.dart';
 import 'solana_wallet_modal_card.dart';
 
-
 /// Solana Wallet Disconnect Card
 /// ------------------------------------------------------------------------------------------------
 
 /// A card that facilitates disconnecting the application from a wallet app.
 class SolanaWalletDisconnectCard extends StatefulWidget {
-  
   /// Creates a card that displays the connected [accounts] with a `disconnect` button.
   const SolanaWalletDisconnectCard({
     super.key,
@@ -50,15 +48,15 @@ class SolanaWalletDisconnectCard extends StatefulWidget {
   final DismissState? dismissState;
 
   @override
-  State<SolanaWalletDisconnectCard> createState() => _SolanaWalletDisconnectCardState();
+  State<SolanaWalletDisconnectCard> createState() =>
+      _SolanaWalletDisconnectCardState();
 }
-
 
 /// Solana Wallet Account Card State
 /// ------------------------------------------------------------------------------------------------
 
-class _SolanaWalletDisconnectCardState extends State<SolanaWalletDisconnectCard> {
-
+class _SolanaWalletDisconnectCardState
+    extends State<SolanaWalletDisconnectCard> {
   /// The connected wallet account.
   Account? _selectedAccount;
 
@@ -92,13 +90,14 @@ class _SolanaWalletDisconnectCardState extends State<SolanaWalletDisconnectCard>
 
   /// Creates an icon image banner for the connected wallet application.
   Widget _banner(
-    final BuildContext context, 
+    final BuildContext context,
     final SolanaWalletModalBannerTheme? theme,
-  ) => const SolanaWalletAppIcon();
+  ) =>
+      const SolanaWalletAppIcon();
 
   /// Builds a view for the current [AsyncSnapshot.connectionState].
   Widget _builder(
-    final BuildContext context, 
+    final BuildContext context,
     final AsyncSnapshot<DeauthorizeResult> snapshot,
   ) {
     switch (snapshot.connectionState) {
@@ -107,20 +106,21 @@ class _SolanaWalletDisconnectCardState extends State<SolanaWalletDisconnectCard>
         return SolanaWalletModalBannerView(
           builder: _banner,
           title: const Text('Accounts'),
-          body: accounts.isEmpty 
-            ? const Text('No connected accounts.')
-            : SolanaWalletAccountsView(
-                accounts: widget.accounts, 
-                selectedAccount: _selectedAccount, 
-                onPressed: _onTapAccount,
-              ),
-          footer: accounts.isEmpty 
-            ? null
-            : TextButton(
-                style: SolanaWalletThemeExtension.of(context)?.primaryButtonStyle,
-                onPressed: _initFuture, // trigger _method()
-                child: const Text('Disconnect'),
-              ),
+          body: accounts.isEmpty
+              ? const Text('No connected accounts.')
+              : SolanaWalletAccountsView(
+                  accounts: widget.accounts,
+                  selectedAccount: _selectedAccount,
+                  onPressed: _onTapAccount,
+                ),
+          footer: accounts.isEmpty
+              ? null
+              : TextButton(
+                  style: SolanaWalletThemeExtension.of(context)
+                      ?.primaryButtonStyle,
+                  onPressed: _initFuture, // trigger _method()
+                  child: const Text('Disconnect'),
+                ),
         );
       case ConnectionState.waiting:
       case ConnectionState.active:
@@ -128,12 +128,12 @@ class _SolanaWalletDisconnectCardState extends State<SolanaWalletDisconnectCard>
       case ConnectionState.done:
         final Object? error = snapshot.error;
         return error != null
-          ? SolanaWalletModalBannerView.error(
-              error: error,
-            )
-          : SolanaWalletModalBannerView.success(
-              message: const Text('Wallet disconnected.'),
-            );
+            ? SolanaWalletModalBannerView.error(
+                error: error,
+              )
+            : SolanaWalletModalBannerView.success(
+                message: const Text('Wallet disconnected.'),
+              );
     }
   }
 
@@ -141,8 +141,8 @@ class _SolanaWalletDisconnectCardState extends State<SolanaWalletDisconnectCard>
   Widget build(final BuildContext context) {
     return SolanaWalletModalCard(
       child: SolanaWalletMethodBuilder(
-        future: _future, 
-        completer: widget.completer, 
+        future: _future,
+        completer: widget.completer,
         dismissState: widget.dismissState,
         builder: _builder,
       ),

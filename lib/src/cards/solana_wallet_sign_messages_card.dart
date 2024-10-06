@@ -2,21 +2,20 @@
 /// ------------------------------------------------------------------------------------------------
 
 import 'package:flutter/material.dart';
-import 'package:solana_wallet_adapter/solana_wallet_adapter.dart' show SignMessagesResult, 
-  SolanaWalletAdapter;
+import '../solana_wallet_adapter/solana_wallet_adapter.dart'
+    show SignMessagesResult, SolanaWalletAdapter;
 import '../views/solana_wallet_modal_banner_view.dart';
 import '../widgets/adapter_widget.dart';
-
 
 /// Solana Wallet Sign Messages Card
 /// ------------------------------------------------------------------------------------------------
 
 /// The [SolanaWalletSignMessagesCard] widget's state.
-typedef SignMessagesAdapterState = AdapterState<SignMessagesResult, SolanaWalletSignMessagesCard>;
+typedef SignMessagesAdapterState
+    = AdapterState<SignMessagesResult, SolanaWalletSignMessagesCard>;
 
 /// A modal card for `signMessages` method calls.
 class SolanaWalletSignMessagesCard extends AdapterWidget<SignMessagesResult> {
-
   /// Creates a `signMessages` card.
   const SolanaWalletSignMessagesCard({
     super.key,
@@ -34,28 +33,28 @@ class SolanaWalletSignMessagesCard extends AdapterWidget<SignMessagesResult> {
   final List<String> addresses;
 
   @override
-  SignMessagesAdapterState createState() => _SolanaWalletSignMessagesCardState();
+  SignMessagesAdapterState createState() =>
+      _SolanaWalletSignMessagesCardState();
 }
-
 
 /// Solana Wallet Sign Messages Card State
 /// ------------------------------------------------------------------------------------------------
 
 class _SolanaWalletSignMessagesCardState extends SignMessagesAdapterState {
-
   @override
   Future<SignMessagesResult> invokeMethod() {
     final SolanaWalletAdapter adapter = widget.adapter;
-    final List<String> encoded = widget.messages.map(adapter.encodeMessage).toList(growable: false);
+    final List<String> encoded =
+        widget.messages.map(adapter.encodeMessage).toList(growable: false);
     return adapter.signMessages(encoded, addresses: widget.addresses);
   }
-  
+
   @override
   Widget? builder(
-    final BuildContext context, 
+    final BuildContext context,
     final AsyncSnapshot<SignMessagesResult> snapshot,
   ) {
-    switch (snapshot.connectionState) {      
+    switch (snapshot.connectionState) {
       case ConnectionState.none:
       case ConnectionState.waiting:
       case ConnectionState.active:
@@ -63,13 +62,13 @@ class _SolanaWalletSignMessagesCardState extends SignMessagesAdapterState {
       case ConnectionState.done:
         final Object? error = snapshot.error;
         return error != null
-          ? SolanaWalletModalBannerView.error(
-              error: error,
-              message: const Text('Message signing error.'),
-            )
-          : SolanaWalletModalBannerView.success(
-              message: const Text('Message signing complete.'),
-            );
+            ? SolanaWalletModalBannerView.error(
+                error: error,
+                message: const Text('Message signing error.'),
+              )
+            : SolanaWalletModalBannerView.success(
+                message: const Text('Message signing complete.'),
+              );
     }
   }
 }

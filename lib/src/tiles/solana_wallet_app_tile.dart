@@ -2,16 +2,14 @@
 /// ------------------------------------------------------------------------------------------------
 
 import 'package:flutter/material.dart';
-import 'package:solana_wallet_adapter/solana_wallet_adapter.dart' show AppInfo;
+import '../solana_wallet_adapter/solana_wallet_adapter.dart' show AppInfo;
 import '../layouts/solana_wallet_grid.dart';
-
 
 /// Solana Wallet App Tile
 /// ------------------------------------------------------------------------------------------------
 
 /// An app widget tile.
 class SolanaWalletAppTile extends StatelessWidget {
-  
   /// Creates an app widget tile.
   const SolanaWalletAppTile({
     super.key,

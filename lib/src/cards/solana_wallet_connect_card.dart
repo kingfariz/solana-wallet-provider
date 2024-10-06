@@ -3,7 +3,7 @@
 
 import 'dart:async';
 import 'package:flutter/material.dart';
-import 'package:solana_wallet_adapter/solana_wallet_adapter.dart';
+import '../solana_wallet_adapter/solana_wallet_adapter.dart';
 import '../../solana_wallet_provider.dart' show SolanaWalletProvider;
 import '../models/dismiss_state.dart';
 import '../views/solana_wallet_apps_view.dart';
@@ -14,13 +14,11 @@ import '../views/solana_wallet_qr_code_view.dart';
 import '../widgets/solana_wallet_method_builder.dart';
 import 'solana_wallet_modal_card.dart';
 
-
 /// Solana Wallet Connect Card
 /// ------------------------------------------------------------------------------------------------
 
 /// A card that facilitates connecting a dApp to a wallet application.
 class SolanaWalletConnectCard extends StatefulWidget {
-  
   /// Creates a card that facilitates connecting a dApp to a wallet application.
   const SolanaWalletConnectCard({
     super.key,
@@ -34,7 +32,7 @@ class SolanaWalletConnectCard extends StatefulWidget {
   /// The wallet adapter interface.
   final SolanaWalletAdapter adapter;
 
-  /// The applications presented as `connect options` (defaults to the adapter platform's 
+  /// The applications presented as `connect options` (defaults to the adapter platform's
   /// [StoreInfo.options] if omitted, pass an empty list to display no options).
   final List<AppInfo>? options;
 
@@ -48,15 +46,14 @@ class SolanaWalletConnectCard extends StatefulWidget {
   final DismissState? dismissState;
 
   @override
-  State<SolanaWalletConnectCard> createState() => _SolanaWalletConnectCardState();
+  State<SolanaWalletConnectCard> createState() =>
+      _SolanaWalletConnectCardState();
 }
-
 
 /// Solana Wallet Connect Card State
 /// ------------------------------------------------------------------------------------------------
 
 class _SolanaWalletConnectCardState extends State<SolanaWalletConnectCard> {
-
   /// The local authorization request.
   Future<AuthorizeResult>? _localFuture;
 
@@ -86,7 +83,7 @@ class _SolanaWalletConnectCardState extends State<SolanaWalletConnectCard> {
     }
   }
 
-  // /// Simulates a connect request that results in a [SolanaWalletAdapterException] with error code 
+  // /// Simulates a connect request that results in a [SolanaWalletAdapterException] with error code
   // /// [SolanaWalletAdapterExceptionCode.walletNotFound].
   // Future<AuthorizeResult> _simulateErrorRequest() {
   //   return Future.delayed(
@@ -102,45 +99,47 @@ class _SolanaWalletConnectCardState extends State<SolanaWalletConnectCard> {
   void _initLocalFuture() {
     if (mounted && _localFuture == null) {
       // _localFuture = _simulateErrorRequest().catchError(_localFutureError);
-      _localFuture = _adapter.authorize(
-        type: AssociationType.local, 
-        walletUriBase: _app?.walletUriBase,
-      ).catchError(_localFutureError);
+      _localFuture = _adapter
+          .authorize(
+            type: AssociationType.local,
+            walletUriBase: _app?.walletUriBase,
+          )
+          .catchError(_localFutureError);
       setState(() {});
     }
   }
 
-  /// Sets [_remoteFuture] and invokes a remote authorization method call if a `hostAuthority` url 
+  /// Sets [_remoteFuture] and invokes a remote authorization method call if a `hostAuthority` url
   /// is available.
   void _initRemoteFuture() {
     final String? hostAuthority = _hostAuthority;
     if (mounted && _remoteFuture == null && hostAuthority != null) {
       _remoteFuture = _adapter.authorize(
-        type: AssociationType.remote, 
-        hostAuthority: hostAuthority, 
+        type: AssociationType.remote,
+        hostAuthority: hostAuthority,
         walletUriBase: _app?.walletUriBase,
       );
       setState(() {});
     }
   }
 
-  /// Handles a local association error and invoke a remote association call for an [error] of type 
+  /// Handles a local association error and invoke a remote association call for an [error] of type
   /// [SolanaWalletAdapterExceptionCode.walletNotFound].
   Future<AuthorizeResult> _localFutureError(
     final Object error, [
-    final StackTrace? stackTrace, 
+    final StackTrace? stackTrace,
   ]) async {
     if (_isWalletNotFoundException(error)) {
       _initRemoteFuture();
     }
     return Future.error(error, stackTrace);
   }
-    
-  /// Returns true if [error] is a [SolanaWalletAdapterException] with error code 
+
+  /// Returns true if [error] is a [SolanaWalletAdapterException] with error code
   /// [SolanaWalletAdapterExceptionCode.walletNotFound].
   bool _isWalletNotFoundException(final Object? error) {
-    return error is SolanaWalletAdapterException 
-      && error.code == SolanaWalletAdapterExceptionCode.walletNotFound;
+    return error is SolanaWalletAdapterException &&
+        error.code == SolanaWalletAdapterExceptionCode.walletNotFound;
   }
 
   /// Invokes a local association method call for [app].
@@ -158,18 +157,20 @@ class _SolanaWalletConnectCardState extends State<SolanaWalletConnectCard> {
   /// Builds an error view.
   Widget _errorBuilder(
     final Object error, [
-    final StackTrace? stackTrace, 
-  ]) => SolanaWalletModalBannerView.error(
-      error: error,
-      message: const Text('Connection failed.'),
-    );
-  
+    final StackTrace? stackTrace,
+  ]) =>
+      SolanaWalletModalBannerView.error(
+        error: error,
+        message: const Text('Connection failed.'),
+      );
+
   /// Builds an success view.
   Widget _successBuilder(
-    final AuthorizeResult data, 
-  ) => SolanaWalletModalBannerView.success(
-      message: const Text('Wallet connected.'),
-    );
+    final AuthorizeResult data,
+  ) =>
+      SolanaWalletModalBannerView.success(
+        message: const Text('Wallet connected.'),
+      );
 
   /// Builds a view for the current local association state.
   Widget _localBuilder(
@@ -179,16 +180,16 @@ class _SolanaWalletConnectCardState extends State<SolanaWalletConnectCard> {
     switch (snapshot.connectionState) {
       case ConnectionState.none:
         final List<AppInfo> options = _options;
-        return options.isEmpty 
-          ? SolanaWalletModalBannerView.opening()
-          : SolanaWalletModalView(
-              title: const Text('Connect Wallet'),
-              message: const Text('Select a wallet provider.'),
-              body: SolanaWalletAppsView(
-                apps: options,
-                onPressed: _onTapConnect,
-              ),
-            );
+        return options.isEmpty
+            ? SolanaWalletModalBannerView.opening()
+            : SolanaWalletModalView(
+                title: const Text('Connect Wallet'),
+                message: const Text('Select a wallet provider.'),
+                body: SolanaWalletAppsView(
+                  apps: options,
+                  onPressed: _onTapConnect,
+                ),
+              );
       case ConnectionState.waiting:
       case ConnectionState.active:
         return SolanaWalletModalBannerView.opening();
@@ -197,15 +198,15 @@ class _SolanaWalletConnectCardState extends State<SolanaWalletConnectCard> {
         if (error != null) {
           if (_remoteFuture != null) {
             return SolanaWalletMethodBuilder(
-              future: _remoteFuture, 
-              completer: widget.completer, 
+              future: _remoteFuture,
+              completer: widget.completer,
               dismissState: widget.dismissState,
               builder: _remoteBuilder,
             );
           } else if (_isWalletNotFoundException(error)) {
             final AppInfo? app = _app;
             return SolanaWalletDownloadView(
-              options: app != null ? [app] : _adapter.store.apps, 
+              options: app != null ? [app] : _adapter.store.apps,
               onPressed: _onTapDownload,
             );
           } else {
@@ -228,15 +229,15 @@ class _SolanaWalletConnectCardState extends State<SolanaWalletConnectCard> {
       case ConnectionState.active:
         return SolanaWalletQrCodeView(
           app: _app,
-          hostAuthority: _hostAuthority!, 
-          timeLimit: _hostTimeLimit, 
+          hostAuthority: _hostAuthority!,
+          timeLimit: _hostTimeLimit,
           onPressedDownload: _onTapDownload,
         );
       case ConnectionState.done:
         final Object? error = snapshot.error;
         return error != null
-          ? _errorBuilder(error, snapshot.stackTrace)
-          : _successBuilder(snapshot.data!);
+            ? _errorBuilder(error, snapshot.stackTrace)
+            : _successBuilder(snapshot.data!);
     }
   }
 
@@ -244,8 +245,8 @@ class _SolanaWalletConnectCardState extends State<SolanaWalletConnectCard> {
   Widget build(final BuildContext context) {
     return SolanaWalletModalCard(
       child: SolanaWalletMethodBuilder(
-        future: _localFuture, 
-        completer: widget.completer, 
+        future: _localFuture,
+        completer: widget.completer,
         dismissState: widget.dismissState,
         builder: _localBuilder,
       ),

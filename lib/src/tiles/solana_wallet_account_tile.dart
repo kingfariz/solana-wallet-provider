@@ -2,19 +2,17 @@
 /// ------------------------------------------------------------------------------------------------
 
 import 'package:flutter/material.dart';
-import 'package:solana_wallet_adapter/solana_wallet_adapter.dart' show Account;
+import '../solana_wallet_adapter/solana_wallet_adapter.dart' show Account;
 import '../layouts/solana_wallet_grid.dart';
 import '../widgets/solana_wallet_copy_text.dart';
 import '../widgets/solana_wallet_icon_painter.dart';
 import '../widgets/solana_wallet_text_overflow.dart';
-
 
 /// Solana Wallet Account Tile
 /// ------------------------------------------------------------------------------------------------
 
 /// An account list tile.
 class SolanaWalletAccountTile extends StatelessWidget {
-
   /// Creates an account list tile.
   const SolanaWalletAccountTile({
     super.key,
@@ -49,15 +47,14 @@ class SolanaWalletAccountTile extends StatelessWidget {
           text: address,
           style: textTheme.labelMedium,
         ),
-        trailing: selected 
-          ? CustomPaint(
-            size: const Size.square(SolanaWalletGrid.x2),
-            painter: SolanaWalletTickIcon(
-              color: Theme.of(context).colorScheme.secondary, 
-              strokeWidth: 1.0
-            ),
-          )
-          : null,
+        trailing: selected
+            ? CustomPaint(
+                size: const Size.square(SolanaWalletGrid.x2),
+                painter: SolanaWalletTickIcon(
+                    color: Theme.of(context).colorScheme.secondary,
+                    strokeWidth: 1.0),
+              )
+            : null,
       ),
     );
   }
