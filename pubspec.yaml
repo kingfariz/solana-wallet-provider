@@ -15,19 +15,15 @@ dependencies:
   shared_preferences: ^2.1.0
   synchronized: ^3.1.0
 
-  solana_common:
-    ^0.1.0+1
-    # path: ../solana_common
-  solana_web3:
-    ^0.1.2
-    # path: ../solana_web3
+  solana_common: ^0.1.0+1
+  solana_web3: ^0.1.2
   solana_jsonrpc: ^0.0.1
-  solana_wallet_adapter_platform_interface:
-    ^0.0.6
-    # path: ../solana_wallet_adapter_platform_interface
-  solana_wallet_adapter_web:
-    ^0.0.9
-    # path: ../solana_wallet_adapter_web
+  solana_wallet_adapter_platform_interface: ^0.0.6
+  solana_wallet_adapter_web: ^0.0.9
+  solana_wallet_provider:
+    git:
+      url: https://github.com/kingfariz/solana-web3.git
+      ref: master
 
 dev_dependencies:
   flutter_test:
