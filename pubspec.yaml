@@ -36,19 +36,15 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^2.0.0
 
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
 # The following section is specific to Flutter packages.
 flutter:
-  # To add assets to your package, add an assets section, like this:
   assets:
     - icons/
-  plugin:
-    platforms:
-      android:
-        default_package: solana_wallet_adapter_android
-      ios:
-        default_package: solana_wallet_adapter_ios
-      web:
-        default_package: solana_wallet_adapter_web
+  # plugin:
+  #   platforms:
+  #     android:
+  #       default_package: solana_wallet_adapter_android
+  #     ios:
+  #       default_package: solana_wallet_adapter_ios
+  #     web:
+  #       default_package: solana_wallet_adapter_web
