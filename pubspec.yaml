@@ -3,21 +3,26 @@ description: Provider widget for solana_web3 and solana_wallet_adapter packages.
 repository: https://github.com/merigo-labs/solana-wallet-provider
 issue_tracker: https://github.com/merigo-labs/solana-wallet-provider/issues/new/choose
 version: 0.1.8
+publish_to: none
 
 environment:
-  sdk: '>=3.0.3 <4.0.0'
+  sdk: ">=3.0.3 <4.0.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  
+
   qr_flutter: ^4.1.0
-  
-  solana_common: ^0.1.0+1
+
+  solana_common:
+    ^0.1.0+1
     # path: ../solana_common
-  solana_wallet_adapter: ^0.1.5
-    # path: ../solana_wallet_adapter
-  solana_web3: ^0.1.2
+  solana_wallet_adapter:
+    git:
+      url: https://github.com/kingfariz/solana-wallet-adapter.git
+      ref: master
+  solana_web3:
+    ^0.1.2
     # path: ../solana_web3
 
 dev_dependencies:
@@ -30,11 +35,10 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
-
   # To add assets to your package, add an assets section, like this:
   assets:
     - icons/
-  
+
   # For details regarding assets in packages, see
   # https://flutter.dev/assets-and-images/#from-packages
   #
