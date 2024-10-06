@@ -6,13 +6,11 @@ import 'solana_wallet_text_overflow.dart';
 import '../layouts/solana_wallet_grid.dart';
 import '../../solana_wallet_provider.dart';
 
-
 /// Solana Wallet Button
 /// ------------------------------------------------------------------------------------------------
 
 /// A [TextButton] that toggles authorization between the application and a wallet.
 class SolanaWalletButton extends StatefulWidget {
-  
   /// Creates a button that toggles authorization between the application and a wallet.
   const SolanaWalletButton({
     super.key,
@@ -49,7 +47,7 @@ class SolanaWalletButton extends StatefulWidget {
 
   /// Called when a pointer enters or exits the button response area.
   ///
-  /// The value passed to the callback is true if a pointer has entered this part of the material 
+  /// The value passed to the callback is true if a pointer has entered this part of the material
   /// and false if a pointer has exited this part of the material.
   final ValueChanged<bool>? onHover;
 
@@ -70,7 +68,7 @@ class SolanaWalletButton extends StatefulWidget {
   final bool autofocus;
 
   /// {@macro flutter.material.inkwell.statesController}
-  final MaterialStatesController? statesController;
+  final WidgetStatesController? statesController;
 
   /// The remote connection server's uri.
   final String? hostAuthority;
@@ -88,13 +86,15 @@ class SolanaWalletButton extends StatefulWidget {
   final ButtonStyle? connectedStyle;
 
   /// Builds the button's content when the application is connected to a wallet.
-  final Widget Function(BuildContext context, Account account)? connectedBuilder;
+  final Widget Function(BuildContext context, Account account)?
+      connectedBuilder;
 
   /// Called when the application disconnects from a wallet.
   final void Function(DeauthorizeResult result)? onDisconnect;
 
   /// Called when the application attempts to disconnect from a wallet and fails.
-  final void Function(Object error, [StackTrace? stackTrace])? onDisconnectError;
+  final void Function(Object error, [StackTrace? stackTrace])?
+      onDisconnectError;
 
   /// The auto dismiss state when disconnecting.
   final DismissState? onDisconnectDismissState;
@@ -138,24 +138,23 @@ class SolanaWalletButton extends StatefulWidget {
   State<SolanaWalletButton> createState() => _SolanaWalletButtonState();
 }
 
-
 /// Solana Wallet Button State
 /// ------------------------------------------------------------------------------------------------
 
 class _SolanaWalletButtonState extends State<SolanaWalletButton> {
-
   /// Creates an `onPressed` callback function for [account].
-  VoidCallback _onPressed(final Account? account, final SolanaWalletProvider provider) {
+  VoidCallback _onPressed(
+      final Account? account, final SolanaWalletProvider provider) {
     return account != null
-      ? () => provider.disconnect(
-          context,
-          dismissState: widget.onDisconnectDismissState,
-        )
-      : () => provider.connect(
-          context,
-          hostAuthority: widget.hostAuthority,
-          dismissState: widget.onConnectDismissState,
-        );
+        ? () => provider.disconnect(
+              context,
+              dismissState: widget.onDisconnectDismissState,
+            )
+        : () => provider.connect(
+              context,
+              hostAuthority: widget.hostAuthority,
+              dismissState: widget.onConnectDismissState,
+            );
   }
 
   /// Builds the button's child widget when the application is connected to [account].
@@ -173,21 +172,23 @@ class _SolanaWalletButtonState extends State<SolanaWalletButton> {
     final SolanaWalletProvider provider = SolanaWalletProvider.of(context);
     final Account? connectedAccount = provider.connectedAccount;
     return TextButton(
-      onPressed: _onPressed(connectedAccount, provider), 
+      onPressed: _onPressed(connectedAccount, provider),
       onLongPress: widget.onLongPress,
       onHover: widget.onHover,
       onFocusChange: widget.onFocusChange,
-      style: (connectedAccount != null ? widget.connectedStyle : widget.disconnectedStyle) 
-        ?? TextButton.styleFrom(textStyle: const TextStyle(inherit: true)),
+      style: (connectedAccount != null
+              ? widget.connectedStyle
+              : widget.disconnectedStyle) ??
+          TextButton.styleFrom(textStyle: const TextStyle(inherit: true)),
       focusNode: widget.focusNode,
       autofocus: widget.autofocus,
       clipBehavior: widget.clipBehavior,
       statesController: widget.statesController,
       child: connectedAccount != null
-        ? widget.connectedBuilder?.call(context, connectedAccount) 
-          ?? _connectBuilder(context, connectedAccount)
-        : widget.disconnectedBuilder?.call(context) 
-          ?? _disconnectBuilder(context),
+          ? widget.connectedBuilder?.call(context, connectedAccount) ??
+              _connectBuilder(context, connectedAccount)
+          : widget.disconnectedBuilder?.call(context) ??
+              _disconnectBuilder(context),
     );
   }
 }
